@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-
 import pygame
-
-ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
 GRAVITY = 0.45
 JUMP_VELOCITY = -12
@@ -15,17 +12,20 @@ BOOST_VELOCITY = -20
 CAT_SIZE = 40
 COLLISION_SIZE = 32
 
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
+
 
 class Cat:
     """Represents the cat controlled by the player."""
 
     def __init__(self, x: int, y: int) -> None:
+        sprite_dir = ASSET_DIR / "sprites"
         self.images = [
-            pygame.image.load(ASSET_DIR / "sprites" / f"cat_walk_{i}.png").convert_alpha()
+            pygame.image.load(sprite_dir / f"cat_walk_{i}.png").convert_alpha()
             for i in range(4)
         ]
         self.rocket_images = [
-            pygame.image.load(ASSET_DIR / "sprites" / f"cat_rocket_{i}.png").convert_alpha()
+            pygame.image.load(sprite_dir / f"cat_rocket_{i}.png").convert_alpha()
             for i in range(2)
         ]
         self.frame = 0
