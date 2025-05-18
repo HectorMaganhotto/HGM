@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
+from pathlib import Path
 
 import pygame
+
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
 PLATFORM_WIDTH = 72
 PLATFORM_HEIGHT = 18
@@ -35,9 +38,9 @@ class Platform:
 
 def load_platform_images() -> dict[str, pygame.Surface]:
     return {
-        "normal": pygame.image.load("assets/sprites/platform_normal.png").convert_alpha(),
-        "breakable": pygame.image.load("assets/sprites/platform_break.png").convert_alpha(),
-        "boost": pygame.image.load("assets/sprites/spring.png").convert_alpha(),
+        "normal": pygame.image.load(ASSET_DIR / "sprites" / "platform_normal.png").convert_alpha(),
+        "breakable": pygame.image.load(ASSET_DIR / "sprites" / "platform_break.png").convert_alpha(),
+        "boost": pygame.image.load(ASSET_DIR / "sprites" / "spring.png").convert_alpha(),
     }
 
 
