@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import os
 import pickle
+from pathlib import Path
 
 import pygame
 
@@ -18,9 +18,9 @@ class UI:
     def __init__(self) -> None:
         self.font = pygame.font.Font(None, 36)
         self.sounds = {
-            "jump": pygame.mixer.Sound(str(ASSET_DIR / "sounds" / "jump.wav")),
-            "powerup": pygame.mixer.Sound(str(ASSET_DIR / "sounds" / "powerup.wav")),
-            "gameover": pygame.mixer.Sound(str(ASSET_DIR / "sounds" / "gameover.wav")),
+            "jump": pygame.mixer.Sound(ASSET_DIR / "sounds" / "jump.wav"),
+            "powerup": pygame.mixer.Sound(ASSET_DIR / "sounds" / "powerup.wav"),
+            "gameover": pygame.mixer.Sound(ASSET_DIR / "sounds" / "gameover.wav"),
         }
         self.score = 0
 

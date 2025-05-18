@@ -150,6 +150,7 @@ class Game:
 
     def update_world(self) -> None:
         self.player.update()
+        self._handle_platform_collisions()
         for platform in list(self.platforms):
             platform.update()
         self.powerups.update(self.player, self.platforms, self)
@@ -163,6 +164,20 @@ class Game:
         self.powerups.draw(surface)
         self.player.draw(surface)
         self.ui.draw(surface, self.score, self.best_score)
+
+    def _handle_platform_collisions(self) -> None:
+        if self.player.vel_y >= 0:
+            for p in self.platforms:
+                if self.player.rect.colliderect(p.rect) and self.player.rect.bottom <= p.rect.bottom:
+                    if p.kind == "breakable":
+                        p.broken = True
+                        break
+                    self.player.rect.bottom = p.rect.top
+                    self.player.vel_y = JUMP_VELOCITY
+                    if p.kind == "boost":
+                        self.player.vel_y -= 6
+                    self.ui.play_sound("jump")
+                    break
 
     def _scroll_world(self) -> None:
         if self.player.rect.top <= self.height // 2:

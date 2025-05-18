@@ -39,11 +39,10 @@ class Platform:
 
 
 def load_platform_images() -> dict[str, pygame.Surface]:
-    """Load and return platform sprites."""
     return {
-        "normal": pygame.image.load(str(ASSET_DIR / "sprites" / "platform_normal.png")).convert_alpha(),
-        "breakable": pygame.image.load(str(ASSET_DIR / "sprites" / "platform_break.png")).convert_alpha(),
-        "boost": pygame.image.load(str(ASSET_DIR / "sprites" / "spring.png")).convert_alpha(),
+        "normal": pygame.image.load(ASSET_DIR / "sprites" / "platform_normal.png").convert_alpha(),
+        "breakable": pygame.image.load(ASSET_DIR / "sprites" / "platform_break.png").convert_alpha(),
+        "boost": pygame.image.load(ASSET_DIR / "sprites" / "spring.png").convert_alpha(),
     }
 
 
@@ -66,12 +65,7 @@ def spawn_platform(y: int) -> Platform:
     )[0]
     x = random.randint(0, 480 - PLATFORM_WIDTH)
     rect = pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
-    if kind == "breakable":
-        image = images["breakable"]
-    elif kind == "boost":
-        image = images["boost"]
-    else:
-        image = images["normal"]
+    image = images.get(kind, images["normal"])
     return Platform(image=image, rect=rect, kind=kind, start_x=x)
 
 

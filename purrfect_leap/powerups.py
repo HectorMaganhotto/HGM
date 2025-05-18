@@ -23,15 +23,14 @@ class PowerUp:
 
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
-
 class PowerUpManager:
     """Manages power-ups in the world."""
 
     def __init__(self) -> None:
         self.images = {
-            "rocket": pygame.image.load(str(ASSET_DIR / "sprites" / "rocket.png")).convert_alpha(),
-            "bubble": pygame.image.load(str(ASSET_DIR / "sprites" / "bubble.png")).convert_alpha(),
-            "coin": pygame.image.load(str(ASSET_DIR / "sprites" / "coin.png")).convert_alpha(),
+            "rocket": pygame.image.load(ASSET_DIR / "sprites" / "rocket.png").convert_alpha(),
+            "bubble": pygame.image.load(ASSET_DIR / "sprites" / "bubble.png").convert_alpha(),
+            "coin": pygame.image.load(ASSET_DIR / "sprites" / "coin.png").convert_alpha(),
         }
         self.powerups: list[PowerUp] = []
         self.scroll_y = 0
