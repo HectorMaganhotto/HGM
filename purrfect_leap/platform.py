@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+import math
 from dataclasses import dataclass
 
 import pygame
@@ -10,6 +11,7 @@ import pygame
 PLATFORM_WIDTH = 72
 PLATFORM_HEIGHT = 18
 VERTICAL_GAP = 100
+MOVING_AMPLITUDE = 50
 
 
 @dataclass
@@ -21,11 +23,12 @@ class Platform:
     kind: str = "normal"
     broken: bool = False
     phase: float = 0.0
+    start_x: int = 0
 
     def update(self) -> None:
         if self.kind == "moving":
             self.phase += 0.05
-            self.rect.x += int(50 * pygame.math.Vector2(1, 0).rotate_rad(self.phase).x)
+            self.rect.x = self.start_x + int(MOVING_AMPLITUDE * math.sin(self.phase))
         if self.kind == "breakable" and self.broken:
             self.rect.y += 5
 
@@ -61,7 +64,7 @@ def spawn_platform(y: int) -> Platform:
     x = random.randint(0, 480 - PLATFORM_WIDTH)
     rect = pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
     image = images["normal"] if kind != "breakable" and kind != "boost" else images.get(kind, images["normal"])
-    return Platform(image=image, rect=rect, kind=kind)
+    return Platform(image=image, rect=rect, kind=kind, start_x=x)
 
 
 def generate_platforms(screen_height: int) -> list[Platform]:
