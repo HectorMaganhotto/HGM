@@ -9,12 +9,11 @@ import math
 
 import pygame
 
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
 PLATFORM_WIDTH = 72
 PLATFORM_HEIGHT = 18
 VERTICAL_GAP = 100
-MOVE_AMPLITUDE = 50
-
-ASSET_DIR = Path(__file__).resolve().parent / "assets"
+AMPLITUDE = 50
 
 
 @dataclass
@@ -31,7 +30,7 @@ class Platform:
     def update(self) -> None:
         if self.kind == "moving":
             self.phase += 0.05
-            self.rect.x = self.start_x + int(MOVE_AMPLITUDE * math.sin(self.phase))
+            self.rect.x = self.start_x + int(AMPLITUDE * math.sin(self.phase))
         if self.kind == "breakable" and self.broken:
             self.rect.y += 5
 
@@ -40,11 +39,11 @@ class Platform:
 
 
 def load_platform_images() -> dict[str, pygame.Surface]:
-    sprite_dir = ASSET_DIR / "sprites"
+    """Load and return platform sprites."""
     return {
-        "normal": pygame.image.load(sprite_dir / "platform_normal.png").convert_alpha(),
-        "breakable": pygame.image.load(sprite_dir / "platform_break.png").convert_alpha(),
-        "boost": pygame.image.load(sprite_dir / "spring.png").convert_alpha(),
+        "normal": pygame.image.load(str(ASSET_DIR / "sprites" / "platform_normal.png")).convert_alpha(),
+        "breakable": pygame.image.load(str(ASSET_DIR / "sprites" / "platform_break.png")).convert_alpha(),
+        "boost": pygame.image.load(str(ASSET_DIR / "sprites" / "spring.png")).convert_alpha(),
     }
 
 
@@ -67,7 +66,12 @@ def spawn_platform(y: int) -> Platform:
     )[0]
     x = random.randint(0, 480 - PLATFORM_WIDTH)
     rect = pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
-    image = images["normal"] if kind not in ("breakable", "boost") else images.get(kind, images["normal"])
+    if kind == "breakable":
+        image = images["breakable"]
+    elif kind == "boost":
+        image = images["boost"]
+    else:
+        image = images["normal"]
     return Platform(image=image, rect=rect, kind=kind, start_x=x)
 
 

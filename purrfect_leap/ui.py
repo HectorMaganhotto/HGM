@@ -8,10 +8,8 @@ import pickle
 
 import pygame
 
-SAVE_FILE = "save.dat"
-
-
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
+SAVE_FILE = "save.dat"
 
 
 class UI:
@@ -19,11 +17,10 @@ class UI:
 
     def __init__(self) -> None:
         self.font = pygame.font.Font(None, 36)
-        sound_dir = ASSET_DIR / "sounds"
         self.sounds = {
-            "jump": pygame.mixer.Sound(sound_dir / "jump.wav"),
-            "powerup": pygame.mixer.Sound(sound_dir / "powerup.wav"),
-            "gameover": pygame.mixer.Sound(sound_dir / "gameover.wav"),
+            "jump": pygame.mixer.Sound(str(ASSET_DIR / "sounds" / "jump.wav")),
+            "powerup": pygame.mixer.Sound(str(ASSET_DIR / "sounds" / "powerup.wav")),
+            "gameover": pygame.mixer.Sound(str(ASSET_DIR / "sounds" / "gameover.wav")),
         }
         self.score = 0
 

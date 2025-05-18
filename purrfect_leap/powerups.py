@@ -28,11 +28,10 @@ class PowerUpManager:
     """Manages power-ups in the world."""
 
     def __init__(self) -> None:
-        sprite_dir = ASSET_DIR / "sprites"
         self.images = {
-            "rocket": pygame.image.load(sprite_dir / "rocket.png").convert_alpha(),
-            "bubble": pygame.image.load(sprite_dir / "bubble.png").convert_alpha(),
-            "coin": pygame.image.load(sprite_dir / "coin.png").convert_alpha(),
+            "rocket": pygame.image.load(str(ASSET_DIR / "sprites" / "rocket.png")).convert_alpha(),
+            "bubble": pygame.image.load(str(ASSET_DIR / "sprites" / "bubble.png")).convert_alpha(),
+            "coin": pygame.image.load(str(ASSET_DIR / "sprites" / "coin.png")).convert_alpha(),
         }
         self.powerups: list[PowerUp] = []
         self.scroll_y = 0
