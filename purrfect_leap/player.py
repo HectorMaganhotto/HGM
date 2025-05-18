@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pygame
+
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
 GRAVITY = 0.45
 JUMP_VELOCITY = -12
@@ -17,11 +21,11 @@ class Cat:
 
     def __init__(self, x: int, y: int) -> None:
         self.images = [
-            pygame.image.load(f"assets/sprites/cat_walk_{i}.png").convert_alpha()
+            pygame.image.load(ASSET_DIR / "sprites" / f"cat_walk_{i}.png").convert_alpha()
             for i in range(4)
         ]
         self.rocket_images = [
-            pygame.image.load(f"assets/sprites/cat_rocket_{i}.png").convert_alpha()
+            pygame.image.load(ASSET_DIR / "sprites" / f"cat_rocket_{i}.png").convert_alpha()
             for i in range(2)
         ]
         self.frame = 0
@@ -34,7 +38,7 @@ class Cat:
         if self.vel_y > 0:
             return
         self.vel_y = JUMP_VELOCITY
-        pygame.mixer.Sound("assets/sounds/jump.wav").play()
+        pygame.mixer.Sound(ASSET_DIR / "sounds" / "jump.wav").play()
 
     def apply_rocket(self) -> None:
         self.rocket_time = 180  # 3 seconds at 60fps
