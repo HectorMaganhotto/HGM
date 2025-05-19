@@ -10,6 +10,7 @@ import math
 import pygame
 
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
+
 PLATFORM_WIDTH = 72
 PLATFORM_HEIGHT = 18
 VERTICAL_GAP = 100
@@ -70,8 +71,11 @@ def spawn_platform(y: int) -> Platform:
 
 
 def generate_platforms(screen_height: int) -> list[Platform]:
-    platforms = []
-    y = screen_height - 40
+    images = get_images()
+    start_rect = pygame.Rect(0, screen_height - 40, 480, PLATFORM_HEIGHT)
+    start_plat = Platform(images["normal"], start_rect, "normal", False, 0.0, 0)
+    platforms = [start_plat]
+    y = start_rect.y - VERTICAL_GAP
     while y > -screen_height:
         platforms.append(spawn_platform(y))
         y -= random.randint(60, 120)

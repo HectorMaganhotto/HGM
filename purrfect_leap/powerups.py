@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pygame
 
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
+
 
 @dataclass
 class PowerUp:
@@ -20,8 +22,6 @@ class PowerUp:
     def apply(self, cat: "Cat") -> None:
         pass
 
-
-ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
 class PowerUpManager:
     """Manages power-ups in the world."""

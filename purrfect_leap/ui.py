@@ -9,6 +9,7 @@ from pathlib import Path
 import pygame
 
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
+
 SAVE_FILE = "save.dat"
 
 

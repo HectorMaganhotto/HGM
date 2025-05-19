@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import pygame
 
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
+
 GRAVITY = 0.45
 JUMP_VELOCITY = -12
 BOOST_VELOCITY = -20
-MOVE_SPEED = 5
 
 CAT_SIZE = 40
 COLLISION_SIZE = 32
@@ -44,11 +45,6 @@ class Cat:
         self.vel_y = BOOST_VELOCITY
 
     def update(self) -> None:
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.rect.x -= MOVE_SPEED
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.rect.x += MOVE_SPEED
         if self.rocket_time > 0:
             self.rocket_time -= 1
             self.vel_y += GRAVITY * 0.1
