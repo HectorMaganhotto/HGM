@@ -17,9 +17,9 @@ def test_generate_platforms():
 
 
 def test_score_persistence(tmp_path):
-    os.chdir(tmp_path)
     pygame.init()
     pygame.display.set_mode((1, 1))
+    os.chdir(tmp_path)
     ui = UI()
     ui.save_best_score(42)
     assert os.path.exists(SAVE_FILE)

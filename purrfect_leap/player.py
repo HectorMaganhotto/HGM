@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-
 import pygame
 
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
@@ -11,6 +10,7 @@ ASSET_DIR = Path(__file__).resolve().parent / "assets"
 GRAVITY = 0.45
 JUMP_VELOCITY = -12
 BOOST_VELOCITY = -20
+MOVE_SPEED = 5
 
 CAT_SIZE = 40
 COLLISION_SIZE = 32
@@ -33,6 +33,10 @@ class Cat:
         self.rect.center = (x, y)
         self.vel_y = 0.0
         self.rocket_time = 0
+
+    def move(self, dx: int) -> None:
+        """Move horizontally by dx pixels."""
+        self.rect.x += dx
 
     def jump(self) -> None:
         if self.vel_y > 0:

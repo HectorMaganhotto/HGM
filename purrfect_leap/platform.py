@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass
 from pathlib import Path
-import math
 
 import pygame
 
@@ -14,7 +14,7 @@ ASSET_DIR = Path(__file__).resolve().parent / "assets"
 PLATFORM_WIDTH = 72
 PLATFORM_HEIGHT = 18
 VERTICAL_GAP = 100
-AMPLITUDE = 50
+MOVE_AMPLITUDE = 50
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Platform:
     def update(self) -> None:
         if self.kind == "moving":
             self.phase += 0.05
-            self.rect.x = self.start_x + int(AMPLITUDE * math.sin(self.phase))
+            self.rect.x = self.start_x + int(MOVE_AMPLITUDE * math.sin(self.phase))
         if self.kind == "breakable" and self.broken:
             self.rect.y += 5
 
@@ -66,16 +66,22 @@ def spawn_platform(y: int) -> Platform:
     )[0]
     x = random.randint(0, 480 - PLATFORM_WIDTH)
     rect = pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
-    image = images.get(kind, images["normal"])
+    if kind in images:
+        image = images[kind]
+    else:
+        image = images["normal"]
     return Platform(image=image, rect=rect, kind=kind, start_x=x)
 
 
 def generate_platforms(screen_height: int) -> list[Platform]:
     images = get_images()
+    platforms = []
+    # starting platform spanning the screen width
+    start_img = pygame.transform.scale(images["normal"], (480, PLATFORM_HEIGHT))
     start_rect = pygame.Rect(0, screen_height - 40, 480, PLATFORM_HEIGHT)
-    start_plat = Platform(images["normal"], start_rect, "normal", False, 0.0, 0)
-    platforms = [start_plat]
-    y = start_rect.y - VERTICAL_GAP
+    platforms.append(Platform(start_img, start_rect, start_x=0))
+
+    y = screen_height - 100
     while y > -screen_height:
         platforms.append(spawn_platform(y))
         y -= random.randint(60, 120)

@@ -7,7 +7,7 @@ from typing import Optional
 
 import pygame
 
-from .player import JUMP_VELOCITY
+from .player import MOVE_SPEED
 
 
 class GameState:
@@ -98,16 +98,26 @@ class PlayingState(GameState):
     def __init__(self, game: "Game") -> None:
         super().__init__(game)
         self.game.reset()
+        self.first_jump = False
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.game.previous_state = self
                 self.game.change_state(PausedState(self.game))
-            elif event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_SPACE and not self.first_jump:
                 self.game.player.jump()
+                self.first_jump = True
 
     def update(self) -> None:
+        keys = pygame.key.get_pressed()
+        dx = 0
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            dx -= MOVE_SPEED
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            dx += MOVE_SPEED
+        if dx:
+            self.game.player.move(dx)
         self.game.update_world()
 
     def draw(self, surface: pygame.Surface) -> None:
@@ -159,26 +169,6 @@ class Game:
         self._scroll_world()
         self.ui.update_score(self.score)
 
-    def _handle_platform_collisions(self) -> None:
-        if self.player.vel_y > 0:
-            next_rect = self.player.rect.move(0, int(self.player.vel_y))
-            for platform in self.platforms:
-                if (
-                    self.player.rect.bottom <= platform.rect.top
-                    and next_rect.bottom >= platform.rect.top
-                    and self.player.rect.centerx >= platform.rect.left
-                    and self.player.rect.centerx <= platform.rect.right
-                ):
-                    if platform.kind == "breakable":
-                        platform.broken = True
-                        return
-                    self.player.rect.bottom = platform.rect.top
-                    if platform.kind == "boost":
-                        self.player.vel_y = JUMP_VELOCITY - 6
-                    else:
-                        self.player.vel_y = JUMP_VELOCITY
-                    return
-
     def draw_world(self, surface: pygame.Surface) -> None:
         surface.fill((135, 206, 235))
         for platform in self.platforms:
@@ -209,6 +199,23 @@ class Game:
         while len(self.platforms) < 10:
             y = min(p.rect.y for p in self.platforms) - platform_module.VERTICAL_GAP
             self.platforms.append(platform_module.spawn_platform(y))
+
+    def _handle_platform_collisions(self) -> None:
+        """Apply jumping when landing on platforms."""
+        cat = self.player
+        if cat.vel_y >= 0:
+            for plat in self.platforms:
+                if (
+                    cat.rect.bottom <= plat.rect.top + 5
+                    and cat.rect.bottom + cat.vel_y >= plat.rect.top
+                    and cat.rect.colliderect(plat.rect)
+                ):
+                    cat.jump()
+                    if plat.kind == "boost":
+                        cat.vel_y = JUMP_VELOCITY - 6
+                    if plat.kind == "breakable":
+                        plat.broken = True
+                    break
 
     def run(self) -> None:
         self.change_state(StartMenuState(self))
