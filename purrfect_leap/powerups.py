@@ -8,8 +8,6 @@ from pathlib import Path
 
 import pygame
 
-ASSET_DIR = Path(__file__).resolve().parent / "assets"
-
 
 @dataclass
 class PowerUp:
@@ -26,11 +24,13 @@ class PowerUp:
 class PowerUpManager:
     """Manages power-ups in the world."""
 
+    ASSET_DIR = Path(__file__).resolve().parent / "assets"
+
     def __init__(self) -> None:
         self.images = {
-            "rocket": pygame.image.load(ASSET_DIR / "sprites" / "rocket.png").convert_alpha(),
-            "bubble": pygame.image.load(ASSET_DIR / "sprites" / "bubble.png").convert_alpha(),
-            "coin": pygame.image.load(ASSET_DIR / "sprites" / "coin.png").convert_alpha(),
+            "rocket": pygame.image.load(self.ASSET_DIR / "sprites" / "rocket.png").convert_alpha(),
+            "bubble": pygame.image.load(self.ASSET_DIR / "sprites" / "bubble.png").convert_alpha(),
+            "coin": pygame.image.load(self.ASSET_DIR / "sprites" / "coin.png").convert_alpha(),
         }
         self.powerups: list[PowerUp] = []
         self.scroll_y = 0
@@ -57,3 +57,4 @@ class PowerUpManager:
     def scroll(self, dy: int) -> None:
         for p in self.powerups:
             p.rect.y += dy
+

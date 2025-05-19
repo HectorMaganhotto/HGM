@@ -7,7 +7,7 @@ from typing import Optional
 
 import pygame
 
-from .player import MOVE_SPEED
+from .player import JUMP_VELOCITY
 
 
 class GameState:
@@ -36,7 +36,7 @@ class StartMenuState(GameState):
             self.game.change_state(PlayingState(self.game))
 
     def draw(self, surface: pygame.Surface) -> None:
-        surface.fill((50, 50, 100))
+        self.game.draw_world(surface)
         title = self.game.ui.font.render("Purr-fect Leap", True, (255, 255, 255))
         prompt = self.game.ui.font.render("Press SPACE or Click", True, (255, 255, 0))
         rect = title.get_rect(center=(self.game.width // 2, self.game.height // 2 - 40))
@@ -98,26 +98,18 @@ class PlayingState(GameState):
     def __init__(self, game: "Game") -> None:
         super().__init__(game)
         self.game.reset()
-        self.first_jump = False
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.game.previous_state = self
                 self.game.change_state(PausedState(self.game))
-            elif event.key == pygame.K_SPACE and not self.first_jump:
-                self.game.player.jump()
-                self.first_jump = True
+            elif event.key == pygame.K_SPACE:
+                if not self.game.started:
+                    self.game.started = True
+                    self.game.player.jump()
 
     def update(self) -> None:
-        keys = pygame.key.get_pressed()
-        dx = 0
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            dx -= MOVE_SPEED
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            dx += MOVE_SPEED
-        if dx:
-            self.game.player.move(dx)
         self.game.update_world()
 
     def draw(self, surface: pygame.Surface) -> None:
@@ -145,6 +137,8 @@ class Game:
         self.powerups = []
         self.scroll_y = 0
         self.score = 0
+        self.started = False
+        self.reset()
 
     def change_state(self, state: GameState) -> None:
         self.state = state
@@ -159,9 +153,13 @@ class Game:
         self.powerups = powerups_module.PowerUpManager()
         self.scroll_y = 0
         self.score = 0
+        self.started = False
+        base = self.platforms[0]
+        self.player.rect.midbottom = (base.rect.centerx, base.rect.top)
 
     def update_world(self) -> None:
-        self.player.update()
+        keys = pygame.key.get_pressed()
+        self.player.update(keys, self.started)
         for platform in list(self.platforms):
             platform.update()
         self._handle_platform_collisions()
@@ -201,21 +199,25 @@ class Game:
             self.platforms.append(platform_module.spawn_platform(y))
 
     def _handle_platform_collisions(self) -> None:
-        """Apply jumping when landing on platforms."""
-        cat = self.player
-        if cat.vel_y >= 0:
-            for plat in self.platforms:
+        if self.player.vel_y >= 0:
+            for platform in self.platforms:
                 if (
-                    cat.rect.bottom <= plat.rect.top + 5
-                    and cat.rect.bottom + cat.vel_y >= plat.rect.top
-                    and cat.rect.colliderect(plat.rect)
+                    self.player.rect.bottom <= platform.rect.top + int(self.player.vel_y)
+                    and self.player.rect.bottom + int(self.player.vel_y) >= platform.rect.top
+                    and self.player.rect.centerx >= platform.rect.left
+                    and self.player.rect.centerx <= platform.rect.right
                 ):
-                    cat.jump()
-                    if plat.kind == "boost":
-                        cat.vel_y = JUMP_VELOCITY - 6
-                    if plat.kind == "breakable":
-                        plat.broken = True
-                    break
+                    self.player.rect.bottom = platform.rect.top
+                    if not self.started:
+                        self.player.vel_y = 0
+                        return
+                    if platform.kind == "breakable":
+                        platform.broken = True
+                    if platform.kind == "boost":
+                        self.player.vel_y = JUMP_VELOCITY - 6
+                    else:
+                        self.player.vel_y = JUMP_VELOCITY
+                    return
 
     def run(self) -> None:
         self.change_state(StartMenuState(self))
@@ -237,3 +239,4 @@ class Game:
 
 if __name__ == "__main__":
     Game().run()
+

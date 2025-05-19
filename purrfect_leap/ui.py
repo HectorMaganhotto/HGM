@@ -9,7 +9,6 @@ from pathlib import Path
 import pygame
 
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
-
 SAVE_FILE = "save.dat"
 
 
@@ -46,3 +45,4 @@ class UI:
 
     def play_sound(self, name: str) -> None:
         self.sounds[name].play()
+

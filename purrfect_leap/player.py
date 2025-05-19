@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 from pathlib import Path
-import pygame
 
-ASSET_DIR = Path(__file__).resolve().parent / "assets"
+import pygame
 
 GRAVITY = 0.45
 JUMP_VELOCITY = -12
 BOOST_VELOCITY = -20
-MOVE_SPEED = 5
 
 CAT_SIZE = 40
 COLLISION_SIZE = 32
+MOVE_SPEED = 5
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
 
 class Cat:
@@ -33,10 +33,7 @@ class Cat:
         self.rect.center = (x, y)
         self.vel_y = 0.0
         self.rocket_time = 0
-
-    def move(self, dx: int) -> None:
-        """Move horizontally by dx pixels."""
-        self.rect.x += dx
+        self.started = False
 
     def jump(self) -> None:
         if self.vel_y > 0:
@@ -48,13 +45,22 @@ class Cat:
         self.rocket_time = 180  # 3 seconds at 60fps
         self.vel_y = BOOST_VELOCITY
 
-    def update(self) -> None:
-        if self.rocket_time > 0:
-            self.rocket_time -= 1
-            self.vel_y += GRAVITY * 0.1
+    def update(self, keys: pygame.key.ScancodeWrapper, started: bool) -> None:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.rect.x -= MOVE_SPEED
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.rect.x += MOVE_SPEED
+
+        if started:
+            if self.rocket_time > 0:
+                self.rocket_time -= 1
+                self.vel_y += GRAVITY * 0.1
+            else:
+                self.vel_y += GRAVITY
+            self.rect.y += int(self.vel_y)
         else:
-            self.vel_y += GRAVITY
-        self.rect.y += int(self.vel_y)
+            self.vel_y = 0
+
         if self.rect.left < -CAT_SIZE:
             self.rect.right = 480 + CAT_SIZE
         elif self.rect.right > 480 + CAT_SIZE:
@@ -68,3 +74,4 @@ class Cat:
             img = self.images[(self.frame // 15) % 4]
         draw_rect = img.get_rect(center=self.rect.center)
         surface.blit(img, draw_rect)
+
